@@ -1,95 +1,133 @@
-import Image from "next/image";
+"use client"
+
+import { useEffect, useRef, useState } from 'react'
+import { Canvas, useFrame, ThreeElements } from '@react-three/fiber'
+import { Environment, OrbitControls } from '@react-three/drei'
+import * as THREE from 'three'
 import styles from "./page.module.css";
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+import { STLLoader } from 'three/examples/jsm/loaders/STLLoader'
 
-export default function Home() {
+
+function STLModel({ url, position, color }: { url: string, position: [number, number, number], color: string }) {
+  const modelRef = useRef<THREE.Mesh>(null!)
+  const [hovered, setHover] = useState(false)
+
+  useFrame((state, delta) => {
+    if (modelRef.current) {
+      modelRef.current.rotation.x += delta * 0.5
+      modelRef.current.rotation.y += delta * 0.5
+    }
+  })
+
+  useEffect(() => {
+    const loader = new STLLoader()
+
+    loader.load(url, (geometry:any) => {
+      if (modelRef.current) {
+        modelRef.current.geometry = geometry
+      }
+    }, undefined, (error:any) => {
+      console.error('An error occurred while loading the STL model:', error)
+    })
+  }, [url])
+
+  const material = new THREE.MeshStandardMaterial({
+    color, // Color plateado
+    metalness: 0.8,
+    roughness: 0.2,
+  })
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  );
+    <mesh
+      ref={modelRef}
+      material={material}
+      position={position}
+      scale={0.2}
+      onPointerOver={() => setHover(true)}
+      onPointerOut={() => setHover(false)}
+    />
+  )
 }
+
+
+ 
+function RingCanvas({ url, color }: { url: string, color: string }) {
+  return (
+    <Canvas>
+      <ambientLight intensity={0.5} />
+      <Environment preset="studio" />
+      <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
+      <pointLight position={[-10, -10, -10]} /> 
+      <STLModel url={url} position={[0, 0, 0]} color={color} />
+      <OrbitControls enableZoom={false} enablePan={false} />
+    </Canvas>
+  )
+}
+
+export default function RingViewer() {
+  const modelUrl = './cat.stl'
+
+  const rings = [
+    { id: 1, name: "Silver Ring", color: "silver", price: "$50" },
+    { id: 2, name: "Gold Ring", color: "gold", price: "$100" },
+    { id: 3, name: "Rose Gold Ring", color: "#b76e79", price: "$75" },
+    { id: 4, name: "Platinum Ring", color: "#e5e4e2", price: "$120" },
+    { id: 5, name: "Bronze Ring", color: "#cd7f32", price: "$60" },
+    { id: 6, name: "Copper Ring", color: "#b87333", price: "$40" },
+  ]
+
+  return (
+    <div className={styles.container}>
+      <h1 className={styles.title}>Ring Collection</h1>
+      <div className={styles.grid}>
+        {rings.map((ring) => (
+          <div key={ring.id} className={styles.card}>
+            <div className={styles.canvasWrapper}>
+               
+              <RingCanvas url={modelUrl} color={ring.color} />
+            </div>
+            <div className={styles.content}>
+              <h2 className={styles.cardTitle}>{ring.name}</h2>
+              <p className={styles.cardText}>Color: {ring.color}</p>
+              <p className={styles.price}>{ring.price}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// function GLTFModel({ url, position }: { url: string, position: [number, number, number] }) {
+//   const modelRef = useRef<THREE.Group>(null!)
+//   const [hovered, setHover] = useState(false)
+
+//   useFrame((state, delta) => {
+//     if (modelRef.current) {
+//       modelRef.current.rotation.x += delta * 0.5
+//       modelRef.current.rotation.y += delta * 0.5
+//     }
+//   })
+
+//   useEffect(() => {
+//     const loader = new GLTFLoader()
+//     loader.load(url, (gltf: any) => {
+//       if (modelRef.current) {
+//         modelRef.current.add(gltf.scene)
+//       }
+//     }, undefined, (error: any) => {
+//       console.error('An error occurred while loading the model:', error)
+//     })
+//   }, [url])
+
+//   return (
+//     <group
+//       ref={modelRef}
+//       position={position}
+//       scale={hovered ? 1.1 : 1}
+//       onPointerOver={() => setHover(true)}
+//       onPointerOut={() => setHover(false)}
+//     />
+//   )
+// }
