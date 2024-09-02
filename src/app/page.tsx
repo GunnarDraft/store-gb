@@ -5,8 +5,8 @@ import { Canvas, useFrame, ThreeElements } from '@react-three/fiber'
 import { Environment, OrbitControls } from '@react-three/drei'
 import * as THREE from 'three'
 import styles from "./page.module.css";
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
-import { STLLoader } from 'three/examples/jsm/loaders/STLLoader'
+import { STLLoader } from 'three/examples/jsm/loaders/STLLoader.js'
+import { Button, DialogActions } from '@mui/material'
 
 
 function STLModel({ url, position, color }: { url: string, position: [number, number, number], color: string }) {
@@ -23,11 +23,11 @@ function STLModel({ url, position, color }: { url: string, position: [number, nu
   useEffect(() => {
     const loader = new STLLoader()
 
-    loader.load(url, (geometry:any) => {
+    loader.load(url, (geometry: any) => {
       if (modelRef.current) {
         modelRef.current.geometry = geometry
       }
-    }, undefined, (error:any) => {
+    }, undefined, (error: any) => {
       console.error('An error occurred while loading the STL model:', error)
     })
   }, [url])
@@ -51,14 +51,14 @@ function STLModel({ url, position, color }: { url: string, position: [number, nu
 }
 
 
- 
+
 function RingCanvas({ url, color }: { url: string, color: string }) {
   return (
     <Canvas>
       <ambientLight intensity={0.5} />
       <Environment preset="studio" />
       <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
-      <pointLight position={[-10, -10, -10]} /> 
+      <pointLight position={[-10, -10, -10]} />
       <STLModel url={url} position={[0, 0, 0]} color={color} />
       <OrbitControls enableZoom={false} enablePan={false} />
     </Canvas>
@@ -84,50 +84,25 @@ export default function RingViewer() {
         {rings.map((ring) => (
           <div key={ring.id} className={styles.card}>
             <div className={styles.canvasWrapper}>
-               
+
               <RingCanvas url={modelUrl} color={ring.color} />
             </div>
             <div className={styles.content}>
               <h2 className={styles.cardTitle}>{ring.name}</h2>
-              <p className={styles.cardText}>Color: {ring.color}</p>
-              <p className={styles.price}>{ring.price}</p>
+              <h1 className={styles.price}>{ring.price}</h1>
             </div>
+            <DialogActions>
+              <Button onClick={() => { }}>Preview</Button>
+              <Button variant="contained" className={styles.btn} onClick={() => {
+
+              }}>
+                Add to Cart
+              </Button>
+            </DialogActions>
           </div>
         ))}
       </div>
     </div>
   )
 }
-
-// function GLTFModel({ url, position }: { url: string, position: [number, number, number] }) {
-//   const modelRef = useRef<THREE.Group>(null!)
-//   const [hovered, setHover] = useState(false)
-
-//   useFrame((state, delta) => {
-//     if (modelRef.current) {
-//       modelRef.current.rotation.x += delta * 0.5
-//       modelRef.current.rotation.y += delta * 0.5
-//     }
-//   })
-
-//   useEffect(() => {
-//     const loader = new GLTFLoader()
-//     loader.load(url, (gltf: any) => {
-//       if (modelRef.current) {
-//         modelRef.current.add(gltf.scene)
-//       }
-//     }, undefined, (error: any) => {
-//       console.error('An error occurred while loading the model:', error)
-//     })
-//   }, [url])
-
-//   return (
-//     <group
-//       ref={modelRef}
-//       position={position}
-//       scale={hovered ? 1.1 : 1}
-//       onPointerOver={() => setHover(true)}
-//       onPointerOut={() => setHover(false)}
-//     />
-//   )
-// }
+ 

@@ -5,9 +5,19 @@
   align-items: center;
   padding: 6rem;
   min-height: 100vh;
+
 }
 
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  
+}
 .description {
+  
   display: inherit;
   justify-content: inherit;
   align-items: inherit;
@@ -44,6 +54,7 @@
   grid-template-columns: repeat(4, minmax(25%, auto));
   max-width: 100%;
   width: var(--max-width);
+  
 }
 
 .card {
@@ -51,7 +62,8 @@
   border-radius: var(--border-radius);
   background: rgba(var(--card-rgb), 0);
   border: 1px solid rgba(var(--card-border-rgb), 0);
-  transition: background 200ms, border 200ms;
+  transition: background 200ms, border 200ms; 
+      box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.1);
 }
 
 .card span {
@@ -107,6 +119,20 @@
 
 .logo {
   position: relative;
+}
+.btn {
+  display: flex;
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius);
+  background: goldenrod ;
+  color: var(--foreground-rgb);
+  font-weight: 600;
+    white-space: nowrap;
+  text-transform: uppercase;
+  transition: background 200ms;
+  &:hover {
+    background: gold;
+  }
 }
 /* Enable hover only on non-touch devices */
 @media (hover: hover) and (pointer: fine) {
