@@ -124,14 +124,14 @@
   display: flex;
   padding: 0.5rem 1rem;
   border-radius: var(--border-radius);
-  background: goldenrod ;
+  background: goldenrod !important;
   color: var(--foreground-rgb);
   font-weight: 600;
     white-space: nowrap;
   text-transform: uppercase;
   transition: background 200ms;
   &:hover {
-    background: gold;
+    background: gold !important;
   }
 }
 /* Enable hover only on non-touch devices */
