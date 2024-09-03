@@ -134,6 +134,21 @@
     background: gold !important;
   }
 }
+.btn2 {
+  display: flex;
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius);
+  border: 1px solid goldenrod !important;
+  color: var(--foreground-rgb);
+  font-weight: 600;
+  white-space: nowrap;
+  text-transform: uppercase;
+  transition: background 200ms;
+
+  &:hover {
+    border: 1px solid gold !important;
+  }
+}
 /* Enable hover only on non-touch devices */
 @media (hover: hover) and (pointer: fine) {
   .card:hover {
@@ -330,3 +345,7 @@
   color: #718096;
 }
 
+.flex{
+  display: flex;
+  flex: 1;
+}
