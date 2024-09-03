@@ -6,9 +6,12 @@ import { Environment, OrbitControls } from '@react-three/drei'
 import * as THREE from 'three'
 import styles from "./page.module.css";
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader.js'
-import { Button, DialogActions, Dialog, DialogContent, DialogContentText, DialogTitle } from '@mui/material'
+import { Button, DialogActions, Dialog, DialogContent, DialogContentText, DialogTitle, Badge } from '@mui/material'
 import IconButton from '@mui/material/IconButton'
-
+import AddIcon from '@mui/icons-material/Add';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import RemoveIcon from '@mui/icons-material/Remove';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 function STLModel({ url, position, color }: { url: string, position: [number, number, number], color: string }) {
   const modelRef = useRef<THREE.Mesh>(null!)
   const [hovered, setHover] = useState(false)
@@ -52,7 +55,7 @@ function STLModel({ url, position, color }: { url: string, position: [number, nu
 
 function RingCanvas({ url, color }: { url: string, color: string }) {
   return (
-    <Canvas>
+    <Canvas fallback={<div>Sorry no WebGL supported!</div>}>
       <ambientLight intensity={0.5} />
       <Environment preset="studio" />
       <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
@@ -77,33 +80,42 @@ interface CartItem extends RingType {
 
 function RingPreview({ ring, onAddToCart, onClose }: { ring: RingType; onAddToCart: (ring: RingType) => void; onClose: () => void }) {
   return (
-    <>
-      <DialogTitle>{ring.name}</DialogTitle>
-      <DialogContent>
-        <DialogContentText>
-          {ring.description}
-        </DialogContentText>
-        <div className={styles.canvasWrapper}>
+    <div className={styles.preview} >
+      <div className={styles.flex}>
+        <div className={styles.canvas}>
           <RingCanvas url='./cat.stl' color={ring.color} />
         </div>
-        <DialogContentText>
-          Price: ${ring.price.toFixed(2)}
-        </DialogContentText>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Close</Button>
-        <Button onClick={() => {
-          onAddToCart(ring)
-          onClose()
-        }}>
-          Add to Cart
-        </Button>
-      </DialogActions>
-    </>
+        <DialogContent className={styles.colum}>
+          <h1>
+            {ring.name}
+          </h1>
+          <DialogContentText>
+            <h2>
+              Price: ${ring.price.toFixed(2)} MXN
+            </h2>
+          </DialogContentText>
+          <DialogContentText>
+            <h4>
+              {ring.description}
+            </h4>
+          </DialogContentText>
+          <br />
+
+          <Button className={styles.btn} onClick={() => {
+            onAddToCart(ring)
+            onClose()
+          }}>
+            Add to Cart
+          </Button>
+          <br />
+          <Button className={styles.btn2} onClick={onClose}>Close</Button>
+        </DialogContent>
+      </div>
+    </div>
   )
 }
 
-function CartView({ cart, onUpdateCart, onClose, onCheckout }: { cart: CartItem[]; onUpdateCart: (updatedCart: CartItem[]) => void; onClose: () => void; onCheckout: () => void }) {
+function CartView({ cart, onUpdateCart, onClose, onCheckout, onPreview }: { cart: CartItem[]; onUpdateCart: (updatedCart: CartItem[]) => void; onClose: () => void; onCheckout: () => void; onPreview: (id: any) => void }) {
   const updateQuantity = (id: number, change: number) => {
     const updatedCart = cart.map(item =>
       item.id === id ? { ...item, quantity: Math.max(0, item.quantity + change) } : item
@@ -114,7 +126,7 @@ function CartView({ cart, onUpdateCart, onClose, onCheckout }: { cart: CartItem[
   const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   return (
-    <>
+    <div className={styles.view }>
       <DialogTitle>Your Cart</DialogTitle>
       <DialogContent>
         {cart.length === 0 ? (
@@ -122,22 +134,35 @@ function CartView({ cart, onUpdateCart, onClose, onCheckout }: { cart: CartItem[
         ) : (
           <>
             {cart.map((item) => (
-              <div key={item.id} className={`${styles.card} flex items-center justify-between py-2 border-b`}>
+              <div key={item.id} className={styles.card}>
                 <div>
                   <h3 className="font-semibold">{item.name}</h3>
-                  <p className="text-sm text-gray-500">${item.price.toFixed(2)} each</p>
+                  <h2 className="text-sm text-gray-500">${item.price.toFixed(2)} MXN</h2>
                 </div>
                 <div className="flex items-center">
+                  <Button
+                    variant="outline"
+                    className={styles.btn2}
+                    onClick={() => onPreview(item)}
+                  >
+                    Preview
+                  </Button>
                   <IconButton onClick={() => updateQuantity(item.id, -1)} size="small">
+                    <RemoveIcon />
                   </IconButton>
                   <span className="mx-2">{item.quantity}</span>
                   <IconButton onClick={() => updateQuantity(item.id, 1)} size="small">
+                    <AddIcon />
                   </IconButton>
                   <IconButton onClick={() => updateQuantity(item.id, -item.quantity)} size="small" className="ml-2">
-                  </IconButton>
+                    <DeleteOutlineIcon />
+                  </IconButton> 
                 </div>
+
               </div>
+
             ))}
+            <br />
             <div className="mt-4 text-right">
               <p className="font-semibold">Total: ${totalPrice.toFixed(2)}</p>
             </div>
@@ -145,21 +170,21 @@ function CartView({ cart, onUpdateCart, onClose, onCheckout }: { cart: CartItem[
         )}
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Close</Button>
-        <Button onClick={onCheckout} disabled={cart.length === 0}>Checkout</Button>
+        <Button onClick={onClose} className={styles.btn2}>Close</Button>
+        <Button onClick={onCheckout} className={styles.btn} disabled={cart.length === 0}>Checkout</Button>
       </DialogActions>
-    </>
+    </div>
   )
 }
 
 export default function RingViewer() {
   const modelUrl = './cat.stl'
   const rings: RingType[] = [
-    { id: 1, name: "Silver Ring", color: "#C0C0C0", price: 99.99, description: "A classic silver ring that never goes out of style." },
-    { id: 2, name: "Gold Ring", color: "#FFD700", price: 299.99, description: "A luxurious gold ring that adds a touch of elegance to any outfit." },
-    { id: 3, name: "Rose Gold Ring", color: "#B76E79", price: 249.99, description: "A trendy rose gold ring that combines style and sophistication." },
-    { id: 4, name: "Platinum Ring", color: "#E5E4E2", price: 499.99, description: "A premium platinum ring known for its durability and shine." },
-    { id: 5, name: "Bronze Ring", color: "#CD7F32", price: 79.99, description: "A rustic bronze ring with a unique, antique appeal." },
+    { id: 1, name: "Silver Ring", color: "#C0C0C0", price: 299.99, description: "A classic silver ring that never goes out of style." },
+    { id: 2, name: "Gold Ring", color: "#FFD700", price: 399.99, description: "A luxurious gold ring that adds a touch of elegance to any outfit." },
+    { id: 3, name: "Rose Gold Ring", color: "#B76E79", price: 549.99, description: "A trendy rose gold ring that combines style and sophistication." },
+    { id: 4, name: "Platinum Ring", color: "#E5E4E2", price: 699.99, description: "A premium platinum ring known for its durability and shine." },
+    { id: 5, name: "Bronze Ring", color: "#CD7F32", price: 99.99, description: "A rustic bronze ring with a unique, antique appeal." },
     { id: 6, name: "Copper Ring", color: "#B87333", price: 59.99, description: "An affordable copper ring with a warm, earthy tone." },
   ]
 
@@ -202,14 +227,11 @@ export default function RingViewer() {
 
   return (
     <div className={styles.container}>
-      <div className={styles.card}>
-        <h1 className="text-xl font-bold">Ring Collection</h1>
-        <IconButton onClick={() => setIsCartOpen(true)}>
-          {totalItems > 0 && (
-            <span className="ml-2">{totalItems} items - ${totalPrice.toFixed(2)}</span>
-          )}
-        </IconButton>
-      </div>
+      <IconButton onClick={() => setIsCartOpen(true)}>
+        <Badge badgeContent={totalItems} color="primary">
+          <ShoppingCartIcon />
+        </Badge>
+      </IconButton>
       <div className={styles.grid}>
         {rings.map(ring => (
           <div key={ring.id} className={`${styles.card} p-4 text-center`} >
@@ -219,7 +241,7 @@ export default function RingViewer() {
             <h3 className="font-semibold mt-2">{ring.name}</h3>
             <h1 className="text-gray-500">${ring.price.toFixed(2)}</h1>
             <div className={styles.flex}>
-            
+
               <Button
                 variant="outline"
                 className={styles.btn2}
@@ -227,7 +249,7 @@ export default function RingViewer() {
               >
                 Preview
               </Button>
-               &nbsp;
+              &nbsp;
               <Button
                 onClick={() => addToCart(ring)}
                 className={styles.btn}
@@ -244,7 +266,13 @@ export default function RingViewer() {
         </Dialog>
       )}
       <Dialog open={isCartOpen} onClose={() => setIsCartOpen(false)}>
-        <CartView cart={cart} onUpdateCart={updateCart} onClose={() => setIsCartOpen(false)} onCheckout={handleCheckout} />
+        <CartView
+          cart={cart}
+          onUpdateCart={updateCart}
+          onClose={() => setIsCartOpen(false)}
+          onCheckout={handleCheckout}
+          onPreview={(ring: any) => setSelectedRing(ring)}
+        />
       </Dialog>
       <Dialog open={isCheckoutOpen} onClose={() => setIsCheckoutOpen(false)}>
         <form onSubmit={handlePlaceOrder}>
