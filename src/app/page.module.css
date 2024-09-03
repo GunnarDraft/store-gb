@@ -178,6 +178,7 @@
 .text{
   text-align: center;
 }
+
  
 
 /* Mobile */
@@ -358,5 +359,9 @@
 .flex {
   display: flex;
   flex: 1;
-  align-items: center;
+  align-items: center;  
+  justify-content: space-between;
+}
+.label{
+  justify-content: center;
 }

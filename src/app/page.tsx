@@ -6,15 +6,145 @@ import { Environment, OrbitControls } from '@react-three/drei'
 import * as THREE from 'three'
 import styles from "./page.module.css";
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader.js'
-import { Button, DialogActions, Dialog, DialogContent, DialogContentText, DialogTitle, Badge, TextField } from '@mui/material'
+import { Button, DialogActions, Dialog, DialogContent, DialogContentText, DialogTitle, Badge, TextField, Slider } from '@mui/material'
 import IconButton from '@mui/material/IconButton'
 import AddIcon from '@mui/icons-material/Add';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import RemoveIcon from '@mui/icons-material/Remove';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { useForm } from 'react-hook-form';
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
+// Catalogs for each input type
+const woodTypes = ['Cocobolo Knot', 'Ebony', 'Rosewood', 'Maple Burl', 'Walnut']
+const tangTypes = ['Short', 'Full']
+const bladeTypes = ['Dagger', 'Chef', 'Hunting', 'Tanto', 'Bowie']
+const steelTypes = ['Damascus', 'High Carbon', 'Stainless', 'Pattern Welded', 'Tool Steel']
+const lengthOptions = Array.from({ length: 20 }, (_, i) => (i + 1) * 5) // 5cm to 100cm in 5cm increments
 
+type BladeSpecs = {
+  wood: string
+  tang: string
+  bladeType: string
+  steel: string
+  length: number
+}
 
+function BladeDesigner() {
+  const [specs, setSpecs] = useState<BladeSpecs>({
+    wood: woodTypes[0],
+    tang: tangTypes[0],
+    bladeType: bladeTypes[0],
+    steel: steelTypes[0],
+    length: lengthOptions[2] // Default to 15cm
+  })
+
+ 
+  const handleChange = (event: Event, newValue: number | number[]) => {
+    setSpecs(prev => ({ ...prev, length: newValue as number }));
+  };
+ 
+
+  const handleSelectChange = (name: keyof BladeSpecs, value: string | number, options: (string | number)[]) => {
+    const currentIndex = options.indexOf(specs[name]);
+    const newIndex = (currentIndex + 1) % options.length
+    setSpecs(prev => ({ ...prev, [name]: options[newIndex] }))
+  }
+
+  const handleSelectChangeReverse = (name: keyof BladeSpecs, value: string | number, options: (string | number)[]) => {
+    const currentIndex = options.indexOf(specs[name])
+    const newIndex = (currentIndex - 1 + options.length) % options.length
+    setSpecs(prev => ({ ...prev, [name]: options[newIndex] }))
+  }
+
+  const getBladeShape = () => {
+    switch (specs.bladeType.toLowerCase()) {
+      case 'dagger':
+        return "M10,10 L90,50 L10,90"
+      case 'chef':
+        return "M10,10 Q50,50 90,30 L90,70 Q50,50 10,90"
+      case 'hunting':
+        return "M10,10 Q50,30 90,30 L90,70 Q50,90 10,90"
+      case 'tanto':
+        return "M10,10 L70,50 L90,50 L90,70 L10,90"
+      case 'bowie':
+        return "M10,10 Q50,30 80,30 L90,50 L80,70 Q50,90 10,90"
+      default:
+        return "M10,10 L90,50 L10,90"
+    }
+  }
+
+  const SelectWithArrows = ({ name, options, value }: { name: keyof BladeSpecs, options: (string | number)[], value: string | number }) => (
+    <div className={styles.flex}>
+      <Button
+        size="icon"
+        variant="outline"
+        onClick={() => handleSelectChangeReverse(name, value, options)}
+      >
+        <KeyboardArrowLeftIcon />
+      </Button>
+      <div className="flex-grow text-center p-2 border rounded-md">
+        {value}
+      </div>
+      <Button
+        size="icon"
+        variant="outline"
+        onClick={() => handleSelectChange(name, value, options)}
+      >
+        <KeyboardArrowRightIcon />
+      </Button>
+    </div>
+  )
+
+  return (
+    <div className="flex flex-col md:flex-row gap-8 p-6 max-w-4xl mx-auto">
+      <div className="flex-1 space-y-6">
+        <h2 className="text-2xl font-bold mb-4">Custom Blade Designer</h2>
+        <div>
+          <label className={styles.label}>Wood</label>
+          <SelectWithArrows name="wood" options={woodTypes} value={specs.wood} />
+        </div>
+        <div>
+          <label className={styles.label}>Tang</label>
+          <SelectWithArrows name="tang" options={tangTypes} value={specs.tang} />
+        </div>
+        <div>
+          <label className={styles.label}>Blade Type</label>
+          <SelectWithArrows name="bladeType" options={bladeTypes} value={specs.bladeType} />
+        </div>
+        <div>
+          <label className={styles.label}>Steel</label>
+          <SelectWithArrows name="steel" options={steelTypes} value={specs.steel} />
+        </div>
+        <div>
+          <label className={styles.label}>Length (cm)</label>
+          <SelectWithArrows name="length" options={lengthOptions} value={specs.length} />
+          <Slider aria-label="Volume" name="length"
+            value={specs.length}
+            min={10} max={110}
+            shiftStep={30}
+            step={10}
+            marks onChange={handleChange} />
+        </div>
+      </div>
+      <div className="flex-1 flex flex-col items-center justify-center">
+        <svg width="300" height="100" viewBox="0 0 100 100" className="mb-4">
+          <path d={getBladeShape()} fill="none" stroke="currentColor" strokeWidth="2" />
+          {specs.tang.toLowerCase() === 'full' && (
+            <rect x="10" y="45" width="15" height="10" fill="currentColor" />
+          )}
+        </svg>
+        <div className="text-center space-y-2">
+          <p><strong>Wood:</strong> {specs.wood}</p>
+          <p><strong>Tang:</strong> {specs.tang}</p>
+          <p><strong>Blade Type:</strong> {specs.bladeType}</p>
+          <p><strong>Steel:</strong> {specs.steel}</p>
+          <p><strong>Length:</strong> {specs.length}cm</p>
+        </div>
+      </div>
+    </div>
+  )
+}
 function STLModel({ url, position, color }: { url: string, position: [number, number, number], color: string }) {
   const modelRef = useRef<THREE.Mesh>(null!)
   const [hovered, setHover] = useState(false)
@@ -198,6 +328,7 @@ export default function RingViewer() {
   const [selectedRing, setSelectedRing] = useState<RingType | null>(null)
   const [isCartOpen, setIsCartOpen] = useState(false)
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
+  const [isKnife, setIsKnife] = useState(false)
 
   const addToCart = (ring: RingType) => {
     setCart(prevCart => {
@@ -237,39 +368,51 @@ export default function RingViewer() {
 
   return (
     <div className={styles.container}>
+
+      <Button onClick={() => setIsKnife(false)}>
+        Knife
+      </Button>
+      <Button onClick={() => setIsKnife(true)}>
+        Rings
+      </Button>
       <IconButton onClick={() => setIsCartOpen(true)}>
         <Badge badgeContent={totalItems} color="primary">
           <ShoppingCartIcon />
         </Badge>
       </IconButton>
-      <div className={styles.grid}>
-        {rings.map(ring => (
-          <div key={ring.id} className={`${styles.card} p-4 text-center`} >
-            <div className={styles.canvasWrapper}>
-              <RingCanvas url={`./${ring.id}.stl`} color={ring.color} />
-            </div>
-            <h3 className="font-semibold mt-2">{ring.name}</h3>
-            <h1 className="text-gray-500">${ring.price.toFixed(2)}</h1>
-            <div className={styles.flex}>
+      {isKnife ?
 
-              <Button
-                variant="outline"
-                className={styles.btn2}
-                onClick={() => setSelectedRing(ring)}
-              >
-                Preview
-              </Button>
-              &nbsp;
-              <Button
-                onClick={() => addToCart(ring)}
-                className={styles.btn}
-              >
-                Add to Cart
-              </Button>
+        <div className={styles.grid}>
+          {rings.map(ring => (
+            <div key={ring.id} className={`${styles.card} p-4 text-center`} >
+              <div className={styles.canvasWrapper}>
+                <RingCanvas url={`./${ring.id}.stl`} color={ring.color} />
+              </div>
+              <h3 className="font-semibold mt-2">{ring.name}</h3>
+              <h1 className="text-gray-500">${ring.price.toFixed(2)}</h1>
+              <div className={styles.flex}>
+
+                <Button
+                  variant="outline"
+                  className={styles.btn2}
+                  onClick={() => setSelectedRing(ring)}
+                >
+                  Preview
+                </Button>
+                &nbsp;
+                <Button
+                  onClick={() => addToCart(ring)}
+                  className={styles.btn}
+                >
+                  Add to Cart
+                </Button>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+        :
+        <BladeDesigner />
+      }
       {selectedRing && (
         <Dialog open={Boolean(selectedRing)} onClose={() => setSelectedRing(null)}>
           <RingPreview ring={selectedRing} onAddToCart={addToCart} onClose={() => setSelectedRing(null)} />
