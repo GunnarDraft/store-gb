@@ -181,7 +181,6 @@ function CartView({ cart, onUpdateCart, onClose, onCheckout, onPreview }: { cart
 }
 
 export default function RingViewer() {
-  const modelUrl = './cat.stl'
   const rings: RingType[] = [
     { id: 1, name: "Silver Ring", color: "#C0C0C0", price: 299.99, description: "A classic silver ring that never goes out of style." },
     { id: 2, name: "Gold Ring", color: "#FFD700", price: 399.99, description: "A luxurious gold ring that adds a touch of elegance to any outfit." },
@@ -243,7 +242,7 @@ export default function RingViewer() {
         {rings.map(ring => (
           <div key={ring.id} className={`${styles.card} p-4 text-center`} >
             <div className={styles.canvasWrapper}>
-              <RingCanvas url={modelUrl} color={ring.color} />
+              <RingCanvas url={`./${ring.id}.stl`} color={ring.color} />
             </div>
             <h3 className="font-semibold mt-2">{ring.name}</h3>
             <h1 className="text-gray-500">${ring.price.toFixed(2)}</h1>
