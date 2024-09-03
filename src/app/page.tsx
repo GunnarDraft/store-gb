@@ -21,8 +21,8 @@ function STLModel({ url, position, color }: { url: string, position: [number, nu
 
   useFrame((state, delta) => {
     if (modelRef.current) {
-      modelRef.current.rotation.x += delta * 0.5
-      modelRef.current.rotation.y += delta * 0.5
+      modelRef.current.rotation.x += delta * 0.1
+      modelRef.current.rotation.y += delta * 0.2
     }
   })
 
