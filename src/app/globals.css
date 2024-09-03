@@ -58,7 +58,7 @@
 
     --callout-rgb: 20, 20, 20;
     --callout-border-rgb: 108, 108, 108;
-    --card-rgb: 100, 100, 100;
+    --card-rgb: 10, 10, 10;
     --card-border-rgb: 200, 200, 200;
   }
 }
@@ -93,5 +93,6 @@ a {
   }
 } 
 .MuiPaper-root { 
-   background-color: #ffffff10 !important;
+   background-color: #ffffffa0 !important;
+  backdrop-filter: blur(8px);
  }

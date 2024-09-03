@@ -6,12 +6,15 @@ import { Environment, OrbitControls } from '@react-three/drei'
 import * as THREE from 'three'
 import styles from "./page.module.css";
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader.js'
-import { Button, DialogActions, Dialog, DialogContent, DialogContentText, DialogTitle, Badge } from '@mui/material'
+import { Button, DialogActions, Dialog, DialogContent, DialogContentText, DialogTitle, Badge, TextField } from '@mui/material'
 import IconButton from '@mui/material/IconButton'
 import AddIcon from '@mui/icons-material/Add';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import RemoveIcon from '@mui/icons-material/Remove';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import { useForm } from 'react-hook-form';
+
+
 function STLModel({ url, position, color }: { url: string, position: [number, number, number], color: string }) {
   const modelRef = useRef<THREE.Mesh>(null!)
   const [hovered, setHover] = useState(false)
@@ -132,14 +135,14 @@ function CartView({ cart, onUpdateCart, onClose, onCheckout, onPreview }: { cart
         {cart.length === 0 ? (
           <DialogContentText>Your cart is empty.</DialogContentText>
         ) : (
-          <>
+          <div >
             {cart.map((item) => (
               <div key={item.id} className={styles.card}>
                 <div>
                   <h3 className="font-semibold">{item.name}</h3>
                   <h2 className="text-sm text-gray-500">${item.price.toFixed(2)} MXN</h2>
                 </div>
-                <div className="flex items-center">
+                <div className={styles.flex}>
                   <Button
                     variant="outline"
                     className={styles.btn2}
@@ -166,7 +169,7 @@ function CartView({ cart, onUpdateCart, onClose, onCheckout, onPreview }: { cart
             <div className="mt-4 text-right">
               <p className="font-semibold">Total: ${totalPrice.toFixed(2)}</p>
             </div>
-          </>
+          </div>
         )}
       </DialogContent>
       <DialogActions>
@@ -221,7 +224,11 @@ export default function RingViewer() {
     setCart([])
     alert('Thank you for your order!')
   }
+  const { register, handleSubmit, formState: { errors } } = useForm();
 
+  const onSubmit = (data:any) => {
+    handlePlaceOrder(data);
+  };
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0)
   const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
 
@@ -275,17 +282,66 @@ export default function RingViewer() {
         />
       </Dialog>
       <Dialog open={isCheckoutOpen} onClose={() => setIsCheckoutOpen(false)}>
-        <form onSubmit={handlePlaceOrder}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <DialogTitle>Checkout</DialogTitle>
           <DialogContent>
             <DialogContentText>Please enter your details to complete the purchase.</DialogContentText>
-            <input type="text" placeholder="Name" className={styles.input} required />
-            <input type="email" placeholder="Email" className={styles.input} required />
-            <input type="text" placeholder="Address" className={styles.input} required />
-            <input type="text" placeholder="City" className={styles.input} required />
-            <input type="text" placeholder="ZIP Code" className={styles.input} required />
-            <input type="text" placeholder="Credit Card Number" className={styles.input} required />
+
+            <TextField
+              type="text"
+              placeholder="Name"
+              className={styles.input}
+              {...register('name', { required: true })}
+              error={!!errors.name}
+              helperText={errors.name ? 'Name is required' : ''}
+            />
+
+            <TextField
+              type="email"
+              placeholder="Email"
+              className={styles.input}
+              {...register('email', { required: true })}
+              error={!!errors.email}
+              helperText={errors.email ? 'Email is required' : ''}
+            />
+
+            <TextField
+              type="text"
+              placeholder="Address"
+              className={styles.input}
+              {...register('address', { required: true })}
+              error={!!errors.address}
+              helperText={errors.address ? 'Address is required' : ''}
+            />
+
+            <TextField
+              type="text"
+              placeholder="City"
+              className={styles.input}
+              {...register('city', { required: true })}
+              error={!!errors.city}
+              helperText={errors.city ? 'City is required' : ''}
+            />
+
+            <TextField
+              type="text"
+              placeholder="ZIP Code"
+              className={styles.input}
+              {...register('zipCode', { required: true })}
+              error={!!errors.zipCode}
+              helperText={errors.zipCode ? 'ZIP Code is required' : ''}
+            />
+
+            <TextField
+              type="text"
+              placeholder="Credit Card Number"
+              className={styles.input}
+              {...register('creditCardNumber', { required: true })}
+              error={!!errors.creditCardNumber}
+              helperText={errors.creditCardNumber ? 'Credit Card Number is required' : ''}
+            />
           </DialogContent>
+
           <DialogActions>
             <Button onClick={() => setIsCheckoutOpen(false)}>Cancel</Button>
             <Button type="submit">Place Order</Button>
