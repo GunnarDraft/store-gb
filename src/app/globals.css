@@ -30,7 +30,7 @@
 
   --callout-rgb: 238, 240, 241;
   --callout-border-rgb: 172, 175, 176;
-  --card-rgb: 180, 185, 188;
+  --card-rgb: 250, 250, 250;
   --card-border-rgb: 255, 215, 0;
 }
 
@@ -58,8 +58,8 @@
 
     --callout-rgb: 20, 20, 20;
     --callout-border-rgb: 108, 108, 108;
-    --card-rgb: 10, 10, 10;
-    --card-border-rgb: 200, 200, 200;
+    --card-rgb: 0, 0, 0;
+    --card-border-rgb: 255, 215, 0;
   }
 }
 
