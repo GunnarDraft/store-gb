@@ -86,7 +86,7 @@ function RingPreview({ ring, onAddToCart, onClose }: { ring: RingType; onAddToCa
     <div className={styles.preview} >
       <div className={styles.flex}>
         <div className={styles.canvas}>
-          <RingCanvas url='./cat.stl' color={ring.color} />
+          <RingCanvas url={`./${ring.id}.stl`} color={ring.color} />
         </div>
         <DialogContent className={styles.colum}>
           <h1>
@@ -129,8 +129,12 @@ function CartView({ cart, onUpdateCart, onClose, onCheckout, onPreview }: { cart
   const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   return (
-    <div className={styles.view }>
-      <DialogTitle>Your Cart</DialogTitle>
+    <div className={styles.view}>
+      <DialogTitle>
+        <h3>
+          Your Cart
+        </h3>
+      </DialogTitle>
       <DialogContent>
         {cart.length === 0 ? (
           <DialogContentText>Your cart is empty.</DialogContentText>
@@ -159,7 +163,7 @@ function CartView({ cart, onUpdateCart, onClose, onCheckout, onPreview }: { cart
                   </IconButton>
                   <IconButton onClick={() => updateQuantity(item.id, -item.quantity)} size="small" className="ml-2">
                     <DeleteOutlineIcon />
-                  </IconButton> 
+                  </IconButton>
                 </div>
 
               </div>
@@ -167,7 +171,7 @@ function CartView({ cart, onUpdateCart, onClose, onCheckout, onPreview }: { cart
             ))}
             <br />
             <div className="mt-4 text-right">
-              <p className="font-semibold">Total: ${totalPrice.toFixed(2)}</p>
+              <h2 className={styles.text}>Total: ${totalPrice.toFixed(2)}</h2>
             </div>
           </div>
         )}
@@ -182,10 +186,10 @@ function CartView({ cart, onUpdateCart, onClose, onCheckout, onPreview }: { cart
 
 export default function RingViewer() {
   const rings: RingType[] = [
-    { id: 1, name: "Silver Ring", color: "#C0C0C0", price: 299.99, description: "A classic silver ring that never goes out of style." },
-    { id: 2, name: "Gold Ring", color: "#FFD700", price: 399.99, description: "A luxurious gold ring that adds a touch of elegance to any outfit." },
-    { id: 3, name: "Rose Gold Ring", color: "#B76E79", price: 549.99, description: "A trendy rose gold ring that combines style and sophistication." },
-    { id: 4, name: "Platinum Ring", color: "#E5E4E2", price: 699.99, description: "A premium platinum ring known for its durability and shine." },
+    { id: 1, name: "Silver Ring", color: "#C0C0C0", price: 1299.99, description: "A classic silver ring that never goes out of style." },
+    { id: 2, name: "Gold Ring", color: "#FFD700", price: 4499.99, description: "A luxurious gold ring that adds a touch of elegance to any outfit." },
+    { id: 3, name: "Rose Gold Ring", color: "#B76E79", price: 6599.99, description: "A trendy rose gold ring that combines style and sophistication." },
+    { id: 4, name: "Platinum Ring", color: "#E5E4E2", price: 9699.99, description: "A premium platinum ring known for its durability and shine." },
     { id: 5, name: "Bronze Ring", color: "#CD7F32", price: 99.99, description: "A rustic bronze ring with a unique, antique appeal." },
     { id: 6, name: "Copper Ring", color: "#B87333", price: 59.99, description: "An affordable copper ring with a warm, earthy tone." },
   ]
@@ -225,7 +229,7 @@ export default function RingViewer() {
   }
   const { register, handleSubmit, formState: { errors } } = useForm();
 
-  const onSubmit = (data:any) => {
+  const onSubmit = (data: any) => {
     handlePlaceOrder(data);
   };
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0)
