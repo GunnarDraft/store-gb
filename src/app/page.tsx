@@ -22,16 +22,21 @@ const bladeTypes = ['Dagger', 'Chef', 'Hunting', 'Tanto', 'Bowie']
 const steelTypes = ['Damascus', 'High Carbon', 'Stainless', 'Pattern Welded', 'Tool Steel']
 const lengthOptions = Array.from({ length: 20 }, (_, i) => (i + 1) * 5) // 5cm to 100cm in 5cm increments
 
+ 
+
 type BladeSpecs = {
-  wood: string
-  tang: string
-  bladeType: string
-  steel: string
-  length: number
-}
+  id: number;
+  wood: string;
+  tang: string;
+  bladeType: string;
+  steel: string;
+  length: number;
+  // Agrega otras propiedades que tengas en BladeSpecs
+};
 
 function BladeDesigner() {
   const [specs, setSpecs] = useState<BladeSpecs>({
+    id: 1,
     wood: woodTypes[0],
     tang: tangTypes[0],
     bladeType: bladeTypes[0],
@@ -83,17 +88,17 @@ function BladeDesigner() {
     description: string;
   }
 
-  const addToCart = (knife: KnifeType) => {
-    setCart(prevCart => {
-      const existingItem = prevCart.find(item => item.id === knife.id)
-      if (existingItem) {
-        return prevCart.map(item =>
-          item.id === knife.id ? { ...item, quantity: item.quantity + 1 } : item
-        )
-      } else {
-        return [...prevCart, { ...knife, quantity: 1 }]
-      }
-    })
+  const addToCart = (knife: BladeSpecs) => {
+    // setCart(prevCart => {
+    //   const existingItem = prevCart.find(item => item.id === knife.id)
+    //   if (existingItem) {
+    //     return prevCart.map(item =>
+    //       item.id === knife.id ? { ...item, quantity: item.quantity + 1 } : item
+    //     )
+    //   } else {
+    //     return [...prevCart, { ...knife, quantity: 1 }]
+    //   }
+    // })
   }
 
 
@@ -168,7 +173,7 @@ function BladeDesigner() {
             marks onChange={handleChange} />
         </div>
         <Button
-          onClick={() => addToCart(knife)}
+          onClick={() => addToCart(specs)}
           className={styles.btn}
         >
           Add to Cart
@@ -233,7 +238,7 @@ function RingCanvas({ url, color }: { url: string, color: string }) {
 }
 
 interface RingType {
-  id: number;
+  id: number; 
   name: string;
   color: string;
   price: number;
@@ -415,13 +420,13 @@ export default function RingViewer() {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
 
           </Typography>
-          <IconButton onClick={() => setIsCartOpen(true)}>
+        </Toolbar>
+      </AppBar>
+          <IconButton className={styles.cart} onClick={() => setIsCartOpen(true)}>
             <Badge badgeContent={totalItems} color="primary">
               <ShoppingCartIcon />
             </Badge>
           </IconButton>
-        </Toolbar>
-      </AppBar>
 
 
       <svg
@@ -434,7 +439,16 @@ export default function RingViewer() {
         <style>
           {`
               .golden-line {
-                stroke: #C8AA6E;           
+                stroke: #C8AA6E;
+                 stroke: url(#gold-gradient);           
+                stroke-width: 0.4;           
+                fill: none;                 
+                stroke-linecap: round;      
+                stroke-linejoin: round;
+              }
+                .gold {
+                stroke: #C8AA6E;
+                 stroke: url(#gold);           
                 stroke-width: 0.4;           
                 fill: none;                 
                 stroke-linecap: round;      
@@ -442,9 +456,32 @@ export default function RingViewer() {
               }
             `}
         </style>
+
+        <defs> 
+          <linearGradient id="gold-gradient">
+            <stop offset="0%" stop-color=" #FFD700" stop-opacity="0.1" />
+            <stop offset="25%" stop-color=" #FFC700" stop-opacity="1" />
+            <stop offset="50%" stop-color=" #eecd7b" stop-opacity="1" />
+            <stop offset="75%" stop-color=" #FFC700" stop-opacity="1" />
+            <stop offset="100%" stop-color=" #FFD700" stop-opacity="0.1" />
+          </linearGradient>
+          <linearGradient id="gold">
+            <stop offset="0%" stop-color=" #FFD700" stop-opacity="1" /> 
+            <stop offset="50%" stop-color=" #ffd53f" stop-opacity="1" /> 
+            <stop offset="100%" stop-color=" #FFD700" stop-opacity="1" />
+          </linearGradient>
+        </defs>
         <path
           className="golden-line"
-          d="M 40 2 L 39 3 L 40 4 L 41 3 L 40 2 M 75 2 H 42 L 40 0 L 38 2 H 5 M 80 0 H 46 L 40 6 L 34 0 H 0"
+          d="M 80 0 H 46 L 40 6 L 34 0 H 0"
+        />
+        <path
+          className="golden-line"
+          d="M 75 2 H 42 L 40 0 L 38 2 H 5 "
+        />
+        <path
+          className="gold"
+          d="M 40 2 L 39 3 L 40 4 L 41 3 L 40 2 "
         />
       </svg>
 

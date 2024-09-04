@@ -52,7 +52,7 @@
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(25%, auto));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   max-width: 100%;
   width: var(--max-width);
 
@@ -364,4 +364,9 @@
 }
 .label{
   justify-content: center;
+}
+.cart{
+  position: fixed;
+  top: 24px;
+  right: 24px;
 }
