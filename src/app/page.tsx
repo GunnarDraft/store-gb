@@ -6,7 +6,7 @@ import { Environment, OrbitControls } from '@react-three/drei'
 import * as THREE from 'three'
 import styles from "./page.module.css";
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader.js'
-import { Button, DialogActions, Dialog, DialogContent, DialogContentText, DialogTitle, Badge, TextField, Slider } from '@mui/material'
+import { Button, DialogActions, Dialog, DialogContent, DialogContentText, DialogTitle, Badge, TextField, Slider, AppBar, Toolbar, Typography } from '@mui/material'
 import IconButton from '@mui/material/IconButton'
 import AddIcon from '@mui/icons-material/Add';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
@@ -39,11 +39,11 @@ function BladeDesigner() {
     length: lengthOptions[2] // Default to 15cm
   })
 
- 
+
   const handleChange = (event: Event, newValue: number | number[]) => {
     setSpecs(prev => ({ ...prev, length: newValue as number }));
   };
- 
+
 
   const handleSelectChange = (name: keyof BladeSpecs, value: string | number, options: (string | number)[]) => {
     const currentIndex = options.indexOf(specs[name]);
@@ -128,6 +128,7 @@ function BladeDesigner() {
         </div>
       </div>
       <div className="flex-1 flex flex-col items-center justify-center">
+
         <svg width="300" height="100" viewBox="0 0 100 100" className="mb-4">
           <path d={getBladeShape()} fill="none" stroke="currentColor" strokeWidth="2" />
           {specs.tang.toLowerCase() === 'full' && (
@@ -368,18 +369,53 @@ export default function RingViewer() {
 
   return (
     <div className={styles.container}>
-
-      <Button onClick={() => setIsKnife(false)}>
-        Knife
-      </Button>
-      <Button onClick={() => setIsKnife(true)}>
-        Rings
-      </Button>
-      <IconButton onClick={() => setIsCartOpen(true)}>
-        <Badge badgeContent={totalItems} color="primary">
-          <ShoppingCartIcon />
-        </Badge>
-      </IconButton>
+      <AppBar position="static">
+        <Toolbar>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+             
+          </Typography>
+          <Button onClick={() => setIsKnife(false)}>
+            Knife
+          </Button>
+          <Button onClick={() => setIsKnife(true)}>
+            Rings
+          </Button>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+             
+          </Typography>
+          <IconButton onClick={() => setIsCartOpen(true)}>
+            <Badge badgeContent={totalItems} color="primary">
+              <ShoppingCartIcon />
+            </Badge>
+          </IconButton>
+        </Toolbar>
+      </AppBar>
+      
+      
+      <svg
+        width="800"
+        height="64"
+        viewBox="0 -0.4 81 7"
+        xmlns="http://www.w3.org/2000/svg"
+        className="w-full h-auto"
+      >
+        <style>
+          {`
+              .golden-line {
+                stroke: #C8AA6E;           
+                stroke-width: 0.4;           
+                fill: none;                 
+                stroke-linecap: round;      
+                stroke-linejoin: round;
+              }
+            `}
+        </style>
+        <path
+          className="golden-line"
+          d="M 40 2 L 39 3 L 40 4 L 41 3 L 40 2 M 75 2 H 42 L 40 0 L 38 2 H 5 M 80 0 H 46 L 40 6 L 34 0 H 0"
+        />
+      </svg>
+      
       {isKnife ?
 
         <div className={styles.grid}>
