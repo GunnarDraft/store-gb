@@ -8,7 +8,7 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
-
+  --variant-textColor: 255, 255, 255;
   --primary-glow: conic-gradient(from 180deg at 50% 50%,
       #16abff33 0deg,
       #0885ff33 55deg,
@@ -33,6 +33,7 @@
   --card-rgb: 250, 250, 250;
   --card-border-rgb: 255, 215, 0;
 }
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -84,7 +85,8 @@ body {
       rgb(var(--background-end-rgb))) rgb(var(--background-start-rgb));
 }
 
-a, p {
+a,
+p {
   color: inherit;
   text-decoration: none;
 }
@@ -93,11 +95,13 @@ a, p {
   html {
     color-scheme: dark;
   }
-} 
-.MuiPaper-root { 
-   background-color: #ffffffa0 !important;
+}
+
+.MuiPaper-root {
+  background-color: #ffffffa0 !important;
   backdrop-filter: blur(8px);
- }
- .MuiButtonBase{
-  color: #060606f0;
- }
+}
+
+.MuiButtonBase {
+  color: var(--variant-textColor) !important;
+}
