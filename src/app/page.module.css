@@ -148,7 +148,7 @@
   padding: 0.5rem 1rem;
   border-radius: var(--border-radius);
   background: goldenrod !important;
-  color: var(--foreground-rgb);
+  color: #2e2e2e !important;
   font-weight: 600;
   white-space: nowrap;
   text-transform: uppercase;
@@ -381,4 +381,21 @@
   position: fixed !important;
   top: 24px;
   right: 24px;
+}
+
+
+@keyframes border-animation {
+  0% {
+    background-size: 8px 2px, 2px 8px, 8px 2px, 2px 8px;
+    background-position: 0 0, 100% 0, 100% 100%, 0 100%;
+  }
+
+  100% {
+    background-size: 8px 2px, 2px 8px, 8px 2px, 2px 8px;
+    background-position: 100% 0, 100% 100%, 0 100%, 0 0;
+  }
+}
+
+.btnbase{ 
+  animation: border-animation 2s linear infinite;
 }

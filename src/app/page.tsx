@@ -409,11 +409,11 @@ export default function RingViewer() {
 
   return (
     <div className={styles.container}>
-      <Toolbar className={styles.toolbar}> 
-        <Button onClick={() => setIsKnife(false)}>
+      <Toolbar className={styles.toolbar}>
+        <Button className={styles.btnbase} onClick={() => setIsKnife(false)}>
           Knife
-        </Button> 
-        <Button onClick={() => setIsKnife(true)}>
+        </Button>
+        <Button className={styles.btnbase} onClick={() => setIsKnife(true)}>
           Rings
         </Button>
       </Toolbar>
@@ -450,15 +450,40 @@ export default function RingViewer() {
                 stroke-linejoin: round;
               }
             `}
+          linear-gradient(top, #a95, #f2f2f2 25%, #ffffff 38%, #c5c5c5 63%, #f7f7f7 87%, #a95);
         </style>
 
         <defs>
           <linearGradient id="gold-gradient">
-            <stop offset="0%" stop-color=" #FFD700" stop-opacity="0.1" />
-            <stop offset="25%" stop-color=" #FFC700" stop-opacity="1" />
-            <stop offset="50%" stop-color=" #eecd7b" stop-opacity="1" />
-            <stop offset="75%" stop-color=" #FFC700" stop-opacity="1" />
-            <stop offset="100%" stop-color=" #FFD700" stop-opacity="0.1" />
+            <stop offset="0%" stop-color="#ffd53f" stop-opacity="0.1" />
+            <stop offset="5%" stop-color="#FFD700" stop-opacity="1" />
+            <stop offset="10%" stop-color="#FFEC8B" stop-opacity="1" />
+            <stop offset="10.5%" stop-color="#fff8d3" stop-opacity="1" />
+            <stop offset="11.5%" stop-color="#FFD700" stop-opacity="1" />
+            <stop offset="15%" stop-color="#ffffff" stop-opacity="1" />
+            <stop offset="16%" stop-color="#f0cf14" stop-opacity="1" />
+            <stop offset="20%" stop-color="#FFD700" stop-opacity="1" />
+            <stop offset="25%" stop-color="#FFEC8B" stop-opacity="1" />
+            <stop offset="30%" stop-color="#FFD700" stop-opacity="1" />
+            <stop offset="35%" stop-color="#fdf9ec" stop-opacity="1" />
+            <stop offset="35.5%" stop-color="#FFEC8B" stop-opacity="1" />
+            <stop offset="40%" stop-color="#ffd53f" stop-opacity="1" />
+            <stop offset="45%" stop-color="#FFD700" stop-opacity="1" />
+            <stop offset="50%" stop-color="#ffd53f" stop-opacity="0.1" />
+            <stop offset="55%" stop-color="#FFD700" stop-opacity="1" />
+            <stop offset="60%" stop-color="#ffd53f" stop-opacity="1" />
+            <stop offset="64.5%" stop-color="#FFEC8B" stop-opacity="1" />
+            <stop offset="65%" stop-color="#fdf9ec" stop-opacity="1" />
+            <stop offset="70%" stop-color="#FFD700" stop-opacity="1" />
+            <stop offset="75%" stop-color="#FFEC8B" stop-opacity="1" />
+            <stop offset="80%" stop-color="#FFD700" stop-opacity="1" />
+            <stop offset="84%" stop-color="#f0cf14" stop-opacity="1" />
+            <stop offset="85%" stop-color="#ffffff" stop-opacity="1" />
+            <stop offset="88.5%" stop-color="#FFD700" stop-opacity="1" />
+            <stop offset="89.5%" stop-color="#fff8d3" stop-opacity="1" />
+            <stop offset="90%" stop-color="#FFEC8B" stop-opacity="1" />
+            <stop offset="95%" stop-color="#FFD700" stop-opacity="1" />
+            <stop offset="100%" stop-color="#ffd53f" stop-opacity="0.1" />
           </linearGradient>
           <linearGradient id="gold">
             <stop offset="0%" stop-color=" #FFD700" stop-opacity="1" />
@@ -492,11 +517,11 @@ export default function RingViewer() {
               <h1 className="text-gray-500">${ring.price.toFixed(2)}</h1>
               <div className={styles.flex}>
 
-                <IconButton 
+                <IconButton
                   className={styles.btn2}
                   onClick={() => setSelectedRing(ring)}
-                > 
-                  <VisibilityIcon/>
+                >
+                  <VisibilityIcon />
                 </IconButton>
                 &nbsp;
                 <Button
