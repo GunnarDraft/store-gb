@@ -98,3 +98,6 @@ a, p {
    background-color: #ffffffa0 !important;
   backdrop-filter: blur(8px);
  }
+ .MuiButtonBase{
+  color: #060606f0;
+ }

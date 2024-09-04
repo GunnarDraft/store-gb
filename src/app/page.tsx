@@ -6,7 +6,7 @@ import { Environment, OrbitControls } from '@react-three/drei'
 import * as THREE from 'three'
 import styles from "./page.module.css";
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader.js'
-import { Button, DialogActions, Dialog, DialogContent, DialogContentText, DialogTitle, Badge, TextField, Slider, AppBar, Toolbar, Typography } from '@mui/material'
+import { Button, DialogActions, Dialog, DialogContent, DialogContentText, DialogTitle, Badge, TextField, Slider, AppBar, Toolbar, Typography, Icon } from '@mui/material'
 import IconButton from '@mui/material/IconButton'
 import AddIcon from '@mui/icons-material/Add';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
@@ -15,6 +15,9 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { useForm } from 'react-hook-form';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+
+
 // Catalogs for each input type
 const woodTypes = ['Cocobolo Knot', 'Ebony', 'Rosewood', 'Maple Burl', 'Walnut']
 const tangTypes = ['Short', 'Full']
@@ -22,7 +25,7 @@ const bladeTypes = ['Dagger', 'Chef', 'Hunting', 'Tanto', 'Bowie']
 const steelTypes = ['Damascus', 'High Carbon', 'Stainless', 'Pattern Welded', 'Tool Steel']
 const lengthOptions = Array.from({ length: 20 }, (_, i) => (i + 1) * 5) // 5cm to 100cm in 5cm increments
 
- 
+
 
 type BladeSpecs = {
   id: number;
@@ -238,7 +241,7 @@ function RingCanvas({ url, color }: { url: string, color: string }) {
 }
 
 interface RingType {
-  id: number; 
+  id: number;
   name: string;
   color: string;
   price: number;
@@ -253,7 +256,7 @@ function RingPreview({ ring, onAddToCart, onClose }: { ring: RingType; onAddToCa
   return (
     <div className={styles.preview} >
       <div className={styles.flex}>
-        <div className={styles.canvas}>
+        <div className={styles.previewcanvas}>
           <RingCanvas url={`./${ring.id}.stl`} color={ring.color} />
         </div>
         <DialogContent className={styles.colum}>
@@ -406,33 +409,25 @@ export default function RingViewer() {
 
   return (
     <div className={styles.container}>
-      <AppBar position="static">
-        <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-
-          </Typography>
-          <Button onClick={() => setIsKnife(false)}>
-            Knife
-          </Button>
-          <Button onClick={() => setIsKnife(true)}>
-            Rings
-          </Button>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-
-          </Typography>
-        </Toolbar>
-      </AppBar>
-          <IconButton className={styles.cart} onClick={() => setIsCartOpen(true)}>
-            <Badge badgeContent={totalItems} color="primary">
-              <ShoppingCartIcon />
-            </Badge>
-          </IconButton>
+      <Toolbar className={styles.toolbar}> 
+        <Button onClick={() => setIsKnife(false)}>
+          Knife
+        </Button> 
+        <Button onClick={() => setIsKnife(true)}>
+          Rings
+        </Button>
+      </Toolbar>
+      <IconButton className={styles.cart} onClick={() => setIsCartOpen(true)}>
+        <Badge badgeContent={totalItems} color="primary">
+          <ShoppingCartIcon fontSize='large' />
+        </Badge>
+      </IconButton>
 
 
       <svg
         width="800"
         height="64"
-        viewBox="0 -0.4 81 7"
+        viewBox="-0.5 -0.5 81 7"
         xmlns="http://www.w3.org/2000/svg"
         className="w-full h-auto"
       >
@@ -457,7 +452,7 @@ export default function RingViewer() {
             `}
         </style>
 
-        <defs> 
+        <defs>
           <linearGradient id="gold-gradient">
             <stop offset="0%" stop-color=" #FFD700" stop-opacity="0.1" />
             <stop offset="25%" stop-color=" #FFC700" stop-opacity="1" />
@@ -466,8 +461,8 @@ export default function RingViewer() {
             <stop offset="100%" stop-color=" #FFD700" stop-opacity="0.1" />
           </linearGradient>
           <linearGradient id="gold">
-            <stop offset="0%" stop-color=" #FFD700" stop-opacity="1" /> 
-            <stop offset="50%" stop-color=" #ffd53f" stop-opacity="1" /> 
+            <stop offset="0%" stop-color=" #FFD700" stop-opacity="1" />
+            <stop offset="50%" stop-color=" #ffd53f" stop-opacity="1" />
             <stop offset="100%" stop-color=" #FFD700" stop-opacity="1" />
           </linearGradient>
         </defs>
@@ -489,21 +484,20 @@ export default function RingViewer() {
 
         <div className={styles.grid}>
           {rings.map(ring => (
-            <div key={ring.id} className={`${styles.card} p-4 text-center`} onClick={() => setSelectedRing(ring)} >
-              <div className={styles.canvasWrapper}>
+            <div key={ring.id} className={`${styles.card} p-4 text-center`} >
+              <div className={styles.canvas}>
                 <RingCanvas url={`./${ring.id}.stl`} color={ring.color} />
               </div>
               <h3 className="font-semibold mt-2">{ring.name}</h3>
               <h1 className="text-gray-500">${ring.price.toFixed(2)}</h1>
               <div className={styles.flex}>
 
-                {/* <Button
-                  variant="outline"
+                <IconButton 
                   className={styles.btn2}
                   onClick={() => setSelectedRing(ring)}
-                >
-                  Preview
-                </Button> */}
+                > 
+                  <VisibilityIcon/>
+                </IconButton>
                 &nbsp;
                 <Button
                   onClick={() => addToCart(ring)}
