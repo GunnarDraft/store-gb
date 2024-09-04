@@ -73,6 +73,30 @@ function BladeDesigner() {
         return "M10,10 L90,50 L10,90"
     }
   }
+  const [cart, setCart] = useState<CartItem[]>([])
+
+  interface KnifeType {
+    id: number;
+    name: string;
+    color: string;
+    price: number;
+    description: string;
+  }
+
+  const addToCart = (knife: KnifeType) => {
+    setCart(prevCart => {
+      const existingItem = prevCart.find(item => item.id === knife.id)
+      if (existingItem) {
+        return prevCart.map(item =>
+          item.id === knife.id ? { ...item, quantity: item.quantity + 1 } : item
+        )
+      } else {
+        return [...prevCart, { ...knife, quantity: 1 }]
+      }
+    })
+  }
+
+
 
   const SelectWithArrows = ({ name, options, value }: { name: keyof BladeSpecs, options: (string | number)[], value: string | number }) => (
     <div className={styles.flex}>
@@ -97,7 +121,24 @@ function BladeDesigner() {
   )
 
   return (
-    <div className="flex flex-col md:flex-row gap-8 p-6 max-w-4xl mx-auto">
+    <div className={styles.flex}>
+      <div className={styles.flex}>
+
+        <svg width="300" height="100" viewBox="0 0 100 100" className="mb-4">
+          <path d={getBladeShape()} fill="none" stroke="currentColor" strokeWidth="2" />
+          {specs.tang.toLowerCase() === 'full' && (
+            <rect x="10" y="45" width="15" height="10" fill="currentColor" />
+          )}
+        </svg>
+        {/* <div className="text-center space-y-2">
+          <p><strong>Wood:</strong> {specs.wood}</p>
+          <p><strong>Tang:</strong> {specs.tang}</p>
+          <p><strong>Blade Type:</strong> {specs.bladeType}</p>
+          <p><strong>Steel:</strong> {specs.steel}</p>
+          <p><strong>Length:</strong> {specs.length}cm</p>
+        </div> */}
+      </div>
+
       <div className="flex-1 space-y-6">
         <h2 className="text-2xl font-bold mb-4">Custom Blade Designer</h2>
         <div>
@@ -126,23 +167,14 @@ function BladeDesigner() {
             step={10}
             marks onChange={handleChange} />
         </div>
+        <Button
+          onClick={() => addToCart(knife)}
+          className={styles.btn}
+        >
+          Add to Cart
+        </Button>
       </div>
-      <div className="flex-1 flex flex-col items-center justify-center">
 
-        <svg width="300" height="100" viewBox="0 0 100 100" className="mb-4">
-          <path d={getBladeShape()} fill="none" stroke="currentColor" strokeWidth="2" />
-          {specs.tang.toLowerCase() === 'full' && (
-            <rect x="10" y="45" width="15" height="10" fill="currentColor" />
-          )}
-        </svg>
-        <div className="text-center space-y-2">
-          <p><strong>Wood:</strong> {specs.wood}</p>
-          <p><strong>Tang:</strong> {specs.tang}</p>
-          <p><strong>Blade Type:</strong> {specs.bladeType}</p>
-          <p><strong>Steel:</strong> {specs.steel}</p>
-          <p><strong>Length:</strong> {specs.length}cm</p>
-        </div>
-      </div>
     </div>
   )
 }
@@ -372,7 +404,7 @@ export default function RingViewer() {
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-             
+
           </Typography>
           <Button onClick={() => setIsKnife(false)}>
             Knife
@@ -381,7 +413,7 @@ export default function RingViewer() {
             Rings
           </Button>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-             
+
           </Typography>
           <IconButton onClick={() => setIsCartOpen(true)}>
             <Badge badgeContent={totalItems} color="primary">
@@ -390,8 +422,8 @@ export default function RingViewer() {
           </IconButton>
         </Toolbar>
       </AppBar>
-      
-      
+
+
       <svg
         width="800"
         height="64"
@@ -415,12 +447,12 @@ export default function RingViewer() {
           d="M 40 2 L 39 3 L 40 4 L 41 3 L 40 2 M 75 2 H 42 L 40 0 L 38 2 H 5 M 80 0 H 46 L 40 6 L 34 0 H 0"
         />
       </svg>
-      
+
       {isKnife ?
 
         <div className={styles.grid}>
           {rings.map(ring => (
-            <div key={ring.id} className={`${styles.card} p-4 text-center`} >
+            <div key={ring.id} className={`${styles.card} p-4 text-center`} onClick={() => setSelectedRing(ring)} >
               <div className={styles.canvasWrapper}>
                 <RingCanvas url={`./${ring.id}.stl`} color={ring.color} />
               </div>
@@ -428,13 +460,13 @@ export default function RingViewer() {
               <h1 className="text-gray-500">${ring.price.toFixed(2)}</h1>
               <div className={styles.flex}>
 
-                <Button
+                {/* <Button
                   variant="outline"
                   className={styles.btn2}
                   onClick={() => setSelectedRing(ring)}
                 >
                   Preview
-                </Button>
+                </Button> */}
                 &nbsp;
                 <Button
                   onClick={() => addToCart(ring)}
