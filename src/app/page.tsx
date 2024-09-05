@@ -63,7 +63,7 @@ function Sword(props: any) {
   }, [props.selectedHandle, props.selectedBlade]);
 
   return (
-    <group ref={group} {...props} dispose={null} position={[0, 0, 0]} rotation={[0, 0, 0]} scale={0.3}>
+    <group ref={group} {...props} dispose={null} position={[0, 0, 0]} rotation={[0, 0, 0]} scale={0.2}>
       {/* blade */}
       <mesh ref={blade} material={materials['Material.002']} geometry={nodes.blade.geometry} position={[0, 0, 0]} />
 
