@@ -16,6 +16,7 @@ import { useForm } from 'react-hook-form';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import { useGLTF } from '@react-three/drei';
 
 
 // Catalogs for each input type
@@ -36,6 +37,42 @@ type BladeSpecs = {
   length: number;
   // Agrega otras propiedades que tengas en BladeSpecs
 };
+function Sword(props: any) {
+  const group = useRef<THREE.Group>(null);
+  const guard = useRef<THREE.Mesh>(null);
+  const handle = useRef<THREE.Mesh>(null);
+  const blade = useRef<THREE.Mesh>(null);
+
+  const { nodes, materials } = useGLTF('./sax.glb') as any;
+
+  // Animación de rotación simple para el modelo de espada
+  useFrame((state) => {
+    const t = state.clock.getElapsedTime();
+    if (group.current) { 
+      group.current.rotation.x = THREE.MathUtils.lerp(group.current.rotation.x, Math.cos(t / 1) / 20 + 0.25, 0.1);
+      group.current.rotation.y = THREE.MathUtils.lerp(group.current.rotation.y, Math.sin(t / 2) / 20, 0.1);
+      group.current.rotation.z = THREE.MathUtils.lerp(group.current.rotation.z, Math.sin(t / 4) / 20, 0.1);
+      group.current.position.y = THREE.MathUtils.lerp(group.current.position.y, (-2 + Math.sin(t / 2)) / 2, 0.1);
+    }
+  });
+
+  // Mostrar/ocultar partes de la espada basado en los props
+  useEffect(() => { 
+    if (handle.current) handle.current.visible = props.selectedHandle === 'handle';
+    if (blade.current) blade.current.visible = props.selectedBlade === 'blade';
+  }, [props.selectedHandle, props.selectedBlade]);
+
+  return (
+    <group ref={group} {...props} dispose={null} position={[0, 0, 0]} rotation={[0, 0, 0]} scale={0.3}>
+      {/* blade */}
+      <mesh ref={blade} material={materials['Material.002']} geometry={nodes.blade.geometry} position={[0, 0, 0]} />
+
+      {/* handle */}
+      <mesh ref={handle} material={materials['Material.001']} geometry={nodes.handle.geometry} position={[0, -8, 0]} />
+ 
+    </group>
+  );
+}
 
 function BladeDesigner() {
   const [specs, setSpecs] = useState<BladeSpecs>({
@@ -47,6 +84,9 @@ function BladeDesigner() {
     length: lengthOptions[2] // Default to 15cm
   })
 
+  const [selectedGuard, setSelectedGuard] = useState('Guard1');
+  const [selectedHandle, setSelectedHandle] = useState('handle');
+  const [selectedBlade, setSelectedBlade] = useState('blade');
 
   const handleChange = (event: Event, newValue: number | number[]) => {
     setSpecs(prev => ({ ...prev, length: newValue as number }));
@@ -65,22 +105,7 @@ function BladeDesigner() {
     setSpecs(prev => ({ ...prev, [name]: options[newIndex] }))
   }
 
-  const getBladeShape = () => {
-    switch (specs.bladeType.toLowerCase()) {
-      case 'dagger':
-        return "M10,10 L90,50 L10,90"
-      case 'chef':
-        return "M10,10 Q50,50 90,30 L90,70 Q50,50 10,90"
-      case 'hunting':
-        return "M10,10 Q50,30 90,30 L90,70 Q50,90 10,90"
-      case 'tanto':
-        return "M10,10 L70,50 L90,50 L90,70 L10,90"
-      case 'bowie':
-        return "M10,10 Q50,30 80,30 L90,50 L80,70 Q50,90 10,90"
-      default:
-        return "M10,10 L90,50 L10,90"
-    }
-  }
+ 
   const [cart, setCart] = useState<CartItem[]>([])
 
   interface KnifeType {
@@ -89,19 +114,6 @@ function BladeDesigner() {
     color: string;
     price: number;
     description: string;
-  }
-
-  const addToCart = (knife: BladeSpecs) => {
-    // setCart(prevCart => {
-    //   const existingItem = prevCart.find(item => item.id === knife.id)
-    //   if (existingItem) {
-    //     return prevCart.map(item =>
-    //       item.id === knife.id ? { ...item, quantity: item.quantity + 1 } : item
-    //     )
-    //   } else {
-    //     return [...prevCart, { ...knife, quantity: 1 }]
-    //   }
-    // })
   }
 
 
@@ -132,19 +144,17 @@ function BladeDesigner() {
     <div className={styles.flex}>
       <div className={styles.flex}>
 
-        <svg width="300" height="100" viewBox="0 0 100 100" className="mb-4">
-          <path d={getBladeShape()} fill="none" stroke="currentColor" strokeWidth="2" />
-          {specs.tang.toLowerCase() === 'full' && (
-            <rect x="10" y="45" width="15" height="10" fill="currentColor" />
-          )}
-        </svg>
-        {/* <div className="text-center space-y-2">
-          <p><strong>Wood:</strong> {specs.wood}</p>
-          <p><strong>Tang:</strong> {specs.tang}</p>
-          <p><strong>Blade Type:</strong> {specs.bladeType}</p>
-          <p><strong>Steel:</strong> {specs.steel}</p>
-          <p><strong>Length:</strong> {specs.length}cm</p>
-        </div> */}
+        <div className={styles.knife}> 
+          <Canvas>
+            <ambientLight intensity={0.5} />
+            <Environment preset="studio" />
+            <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
+            <pointLight position={[-10, -10, -10]} />
+            <OrbitControls enableZoom={false} enablePan={false}  />
+            <Sword selectedGuard={selectedGuard} selectedHandle={selectedHandle} selectedBlade={selectedBlade} />
+          </Canvas>
+        </div>
+
       </div>
 
       <div className="flex-1 space-y-6">
@@ -176,7 +186,7 @@ function BladeDesigner() {
             marks onChange={handleChange} />
         </div>
         <Button
-          onClick={() => addToCart(specs)}
+          onClick={() => {}}
           className={styles.btn}
         >
           Add to Cart
@@ -234,8 +244,8 @@ function RingCanvas({ url, color }: { url: string, color: string }) {
       <Environment preset="studio" />
       <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
       <pointLight position={[-10, -10, -10]} />
-      <STLModel url={url} position={[0, 0, 0]} color={color} />
       <OrbitControls enableZoom={false} enablePan={false} />
+      <STLModel url={url} position={[0, 0, 0]} color={color} />
     </Canvas>
   )
 }

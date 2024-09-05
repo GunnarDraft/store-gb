@@ -158,7 +158,10 @@
     background: gold !important;
   }
 }
-
+.knife{
+  height: 500px;
+  width: 300px; 
+}
 .btn2 {
   display: flex;
   padding: 0.5rem 1rem;
