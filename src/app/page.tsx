@@ -20,13 +20,13 @@ import { useGLTF } from '@react-three/drei';
 
 
 // Catalogs for each input type
-const woodTypes = ['Cocobolo Knot', 'Ebony', 'Rosewood', 'Maple Burl', 'Walnut']
+const woodTypes = ['Cocobolo', 'Ebony', 'Rosewood', 'Maple Burl', 'Walnut']
 const tangTypes = ['Short', 'Full']
-const bladeTypes = ['Dagger', 'Chef', 'Hunting', 'Tanto', 'Bowie']
-const steelTypes = ['Damascus', 'High Carbon', 'Stainless', 'Pattern Welded', 'Tool Steel']
+const bladeTypes = ['blade', 'sax', 'Hunting', 'Tanto', 'Bowie']
+const steelTypes = ['Damascus', 'Stainless', 'HighCarbon', 'PatternWelded', 'ToolSteel']
 const lengthOptions = Array.from({ length: 20 }, (_, i) => (i + 1) * 5) // 5cm to 100cm in 5cm increments
 
-
+ 
 
 type BladeSpecs = {
   id: number;
@@ -37,42 +37,7 @@ type BladeSpecs = {
   length: number;
   // Agrega otras propiedades que tengas en BladeSpecs
 };
-function Sword(props: any) {
-  const group = useRef<THREE.Group>(null);
-  const guard = useRef<THREE.Mesh>(null);
-  const handle = useRef<THREE.Mesh>(null);
-  const blade = useRef<THREE.Mesh>(null);
 
-  const { nodes, materials } = useGLTF('./sax.glb') as any;
-
-  // Animación de rotación simple para el modelo de espada
-  useFrame((state) => {
-    const t = state.clock.getElapsedTime();
-    if (group.current) { 
-      group.current.rotation.x = THREE.MathUtils.lerp(group.current.rotation.x, Math.cos(t / 1) / 20 + 0.25, 0.1);
-      group.current.rotation.y = THREE.MathUtils.lerp(group.current.rotation.y, Math.sin(t / 2) / 20, 0.1);
-      group.current.rotation.z = THREE.MathUtils.lerp(group.current.rotation.z, Math.sin(t / 4) / 20, 0.1);
-      group.current.position.y = THREE.MathUtils.lerp(group.current.position.y, (-2 + Math.sin(t / 2)) / 2, 0.1);
-    }
-  });
-
-  // Mostrar/ocultar partes de la espada basado en los props
-  useEffect(() => { 
-    if (handle.current) handle.current.visible = props.selectedHandle === 'handle';
-    if (blade.current) blade.current.visible = props.selectedBlade === 'blade';
-  }, [props.selectedHandle, props.selectedBlade]);
-
-  return (
-    <group ref={group} {...props} dispose={null} position={[0, 0, 0]} rotation={[0, 0, 0]} scale={0.2}>
-      {/* blade */}
-      <mesh ref={blade} material={materials['Material.002']} geometry={nodes.blade.geometry} position={[0, 0, 0]} />
-
-      {/* handle */}
-      <mesh ref={handle} material={materials['Material.001']} geometry={nodes.handle.geometry} position={[0, -8, 0]} />
- 
-    </group>
-  );
-}
 
 function BladeDesigner() {
   const [specs, setSpecs] = useState<BladeSpecs>({
@@ -84,7 +49,6 @@ function BladeDesigner() {
     length: lengthOptions[2] // Default to 15cm
   })
 
-  const [selectedGuard, setSelectedGuard] = useState('Guard1');
   const [selectedHandle, setSelectedHandle] = useState('handle');
   const [selectedBlade, setSelectedBlade] = useState('blade');
 
@@ -105,7 +69,7 @@ function BladeDesigner() {
     setSpecs(prev => ({ ...prev, [name]: options[newIndex] }))
   }
 
- 
+
   const [cart, setCart] = useState<CartItem[]>([])
 
   interface KnifeType {
@@ -140,21 +104,39 @@ function BladeDesigner() {
     </div>
   )
 
+
+  const group = useRef<THREE.Group>(null);
+  const guard = useRef<THREE.Mesh>(null);
+  const handle = useRef<THREE.Mesh>(null);
+  const blade = useRef<THREE.Mesh>(null);
+
+  const { nodes, materials } = useGLTF('./sax.glb') as any;
+
+
+  useEffect(() => {
+    if (handle.current) handle.current.visible = selectedHandle === 'handle';
+    if (blade.current) blade.current.visible = selectedBlade === 'blade';
+  }, [selectedHandle, selectedBlade]);
+
+
   return (
     <div className={styles.flex}>
       <div className={styles.flex}>
-
-        <div className={styles.knife}> 
+        <div className={styles.knife}>
           <Canvas>
             <ambientLight intensity={0.5} />
             <Environment preset="studio" />
             <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
             <pointLight position={[-10, -10, -10]} />
-            <OrbitControls enableZoom={false} enablePan={false}  />
-            <Sword selectedGuard={selectedGuard} selectedHandle={selectedHandle} selectedBlade={selectedBlade} />
+            <OrbitControls enableZoom={false} enablePan={false} />
+            <group ref={group} dispose={null} position={[0, 0, 0]} rotation={[0, 0, 0]} scale={0.2}>
+              {/* blade */}
+              <mesh ref={blade} material={materials[specs.steel]} geometry={nodes.blade.geometry} position={[0, 0, 0]} />
+              {/* handle */}
+              <mesh ref={handle} material={materials[specs.wood]} geometry={nodes.handle.geometry} position={[0, -8, 0]} />
+            </group>
           </Canvas>
         </div>
-
       </div>
 
       <div className="flex-1 space-y-6">
@@ -186,7 +168,7 @@ function BladeDesigner() {
             marks onChange={handleChange} />
         </div>
         <Button
-          onClick={() => {}}
+          onClick={() => { }}
           className={styles.btn}
         >
           Add to Cart
@@ -465,40 +447,40 @@ export default function RingViewer() {
 
         <defs>
           <linearGradient id="gold-gradient">
-            <stop offset="0%" stop-color="#ffd53f" stop-opacity="0.1" />
-            <stop offset="5%" stop-color="#FFD700" stop-opacity="1" />
-            <stop offset="10%" stop-color="#FFEC8B" stop-opacity="1" />
-            <stop offset="10.5%" stop-color="#fff8d3" stop-opacity="1" />
-            <stop offset="11.5%" stop-color="#FFD700" stop-opacity="1" />
-            <stop offset="15%" stop-color="#ffffff" stop-opacity="1" />
-            <stop offset="16%" stop-color="#f0cf14" stop-opacity="1" />
-            <stop offset="20%" stop-color="#FFD700" stop-opacity="1" />
-            <stop offset="25%" stop-color="#FFEC8B" stop-opacity="1" />
-            <stop offset="30%" stop-color="#FFD700" stop-opacity="1" />
-            <stop offset="35%" stop-color="#fdf9ec" stop-opacity="1" />
-            <stop offset="35.5%" stop-color="#FFEC8B" stop-opacity="1" />
-            <stop offset="40%" stop-color="#ffd53f" stop-opacity="1" />
-            <stop offset="45%" stop-color="#FFD700" stop-opacity="1" />
-            <stop offset="50%" stop-color="#ffd53f" stop-opacity="0.1" />
-            <stop offset="55%" stop-color="#FFD700" stop-opacity="1" />
-            <stop offset="60%" stop-color="#ffd53f" stop-opacity="1" />
-            <stop offset="64.5%" stop-color="#FFEC8B" stop-opacity="1" />
-            <stop offset="65%" stop-color="#fdf9ec" stop-opacity="1" />
-            <stop offset="70%" stop-color="#FFD700" stop-opacity="1" />
-            <stop offset="75%" stop-color="#FFEC8B" stop-opacity="1" />
-            <stop offset="80%" stop-color="#FFD700" stop-opacity="1" />
-            <stop offset="84%" stop-color="#f0cf14" stop-opacity="1" />
-            <stop offset="85%" stop-color="#ffffff" stop-opacity="1" />
-            <stop offset="88.5%" stop-color="#FFD700" stop-opacity="1" />
-            <stop offset="89.5%" stop-color="#fff8d3" stop-opacity="1" />
-            <stop offset="90%" stop-color="#FFEC8B" stop-opacity="1" />
-            <stop offset="95%" stop-color="#FFD700" stop-opacity="1" />
-            <stop offset="100%" stop-color="#ffd53f" stop-opacity="0.1" />
+            <stop offset="0%" stopColor="#ffd53f" stopOpacity="0.1" />
+            <stop offset="5%" stopColor="#FFD700" stopOpacity="1" />
+            <stop offset="10%" stopColor="#FFEC8B" stopOpacity="1" />
+            <stop offset="10.5%" stopColor="#fff8d3" stopOpacity="1" />
+            <stop offset="11.5%" stopColor="#FFD700" stopOpacity="1" />
+            <stop offset="15%" stopColor="#ffffff" stopOpacity="1" />
+            <stop offset="16%" stopColor="#f0cf14" stopOpacity="1" />
+            <stop offset="20%" stopColor="#FFD700" stopOpacity="1" />
+            <stop offset="25%" stopColor="#FFEC8B" stopOpacity="1" />
+            <stop offset="30%" stopColor="#FFD700" stopOpacity="1" />
+            <stop offset="35%" stopColor="#fdf9ec" stopOpacity="1" />
+            <stop offset="35.5%" stopColor="#FFEC8B" stopOpacity="1" />
+            <stop offset="40%" stopColor="#ffd53f" stopOpacity="1" />
+            <stop offset="45%" stopColor="#FFD700" stopOpacity="1" />
+            <stop offset="50%" stopColor="#ffd53f" stopOpacity="0.1" />
+            <stop offset="55%" stopColor="#FFD700" stopOpacity="1" />
+            <stop offset="60%" stopColor="#ffd53f" stopOpacity="1" />
+            <stop offset="64.5%" stopColor="#FFEC8B" stopOpacity="1" />
+            <stop offset="65%" stopColor="#fdf9ec" stopOpacity="1" />
+            <stop offset="70%" stopColor="#FFD700" stopOpacity="1" />
+            <stop offset="75%" stopColor="#FFEC8B" stopOpacity="1" />
+            <stop offset="80%" stopColor="#FFD700" stopOpacity="1" />
+            <stop offset="84%" stopColor="#f0cf14" stopOpacity="1" />
+            <stop offset="85%" stopColor="#ffffff" stopOpacity="1" />
+            <stop offset="88.5%" stopColor="#FFD700" stopOpacity="1" />
+            <stop offset="89.5%" stopColor="#fff8d3" stopOpacity="1" />
+            <stop offset="90%" stopColor="#FFEC8B" stopOpacity="1" />
+            <stop offset="95%" stopColor="#FFD700" stopOpacity="1" />
+            <stop offset="100%" stopColor="#ffd53f" stopOpacity="0.1" />
           </linearGradient>
           <linearGradient id="gold">
-            <stop offset="0%" stop-color=" #FFD700" stop-opacity="1" />
-            <stop offset="50%" stop-color=" #ffd53f" stop-opacity="1" />
-            <stop offset="100%" stop-color=" #FFD700" stop-opacity="1" />
+            <stop offset="0%" stopColor=" #FFD700" stopOpacity="1" />
+            <stop offset="50%" stopColor=" #ffd53f" stopOpacity="1" />
+            <stop offset="100%" stopColor=" #FFD700" stopOpacity="1" />
           </linearGradient>
         </defs>
         <path
